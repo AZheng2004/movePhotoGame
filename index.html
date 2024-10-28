@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片移动游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 1200px;
+            width: 100%;
+            background-color: blanchedalmond;
+            display: flex;
+            /* justify-content: space-around; */
+            align-items: center;
+            position: relative;
+            flex-direction: column;
+            /* flex-wrap: wrap; */
+
+        }
+
+        .img-box {
+            display: flex;
+            flex-wrap: wrap;
+            width: 80vw;
+            height: 80vw;
+            background: #f8eeee;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            margin-top: 150px;
+        }
+
+        .img-box img {
+            border: #fdfdfd 2px solid;
+            width: 33.3%;
+            height: 33.3%;
+            box-sizing: border-box;
+        }
+
+        .img-box img:hover {
+            border: #fdfdfd 4px solid;
+            transform: scale(1.1);
+            transition: border 0.5s;
+            transition: transform 0.5s;
+            border-radius: 3%;
+        }
+
+        button {
+            width: 100px;
+            height: 40px;
+            font-size: 20x;
+            border-radius: 5px;
+            border: 3px solid black;
+        }
+
+        .musicButton {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-image: url(./musicimg/nomusic.png);
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        h1 {
+            position: absolute;
+            top: 0;
+            right: 100px;
+        }
+
+        .buttombox {
+            display: flex;
+            /* flex-direction: column; */
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            /* justify-content: center;
+            justify-items: center; */
+            flex-shrink: 0;
+            width: 100vw;
+            height: 140px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>BGM右上角开启</h1>
+    <div class="musicButton"></div>
+    <div class="img-box"></div>
+    <div class="buttombox">
+        <button class="help">求助</button>
+        <button class="replay">重新玩</button>
+    </div>
+
+    <script>
+        let replay = document.querySelector('.replay')
+        replay.addEventListener('click', main)
+        main();
+        const music1 = new Audio('./001.mp3');
+        let num = 0;
+        let bgmbtn = document.querySelector('.musicButton');
+        bgmbtn.addEventListener('click', function () {
+            num++;
+            if (num % 2 == 0) {
+                bgmbtn.style.backgroundImage = `url(./musicimg/nomusic.png)`;
+                music1.pause();
+            }
+            else {
+                bgmbtn.style.backgroundImage = `url(./musicimg/music.png)`;
+                music1.play();
+                music1.loop = true;
+            }
+        })
+        function main() {
+            function generateRandomNumbers() {
+                let numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+                let result = [];
+                while (numbers.length > 0) {
+                    let randomIndex = Math.floor(Math.random() * numbers.length);
+                    let randomNumber = numbers.splice(randomIndex, 1);
+                    result.push(randomNumber);
+                }
+                return result;
+            }
+
+            let randomNumbers = generateRandomNumbers();
+            console.log(randomNumbers);
+            let imgBox = document.querySelector('.img-box');
+            imgBox.innerHTML = null;
+            for (let i = 1; i <= 9; i++) {
+                if (i < 9) {
+                    imgBox.innerHTML += `<img src="./img/${randomNumbers[i - 1]}.jpeg" alt="" id="${randomNumbers[i - 1]}" class=${randomNumbers[i - 1]}>`;
+                } else {
+                    imgBox.innerHTML += `<img src="./img/null.jpeg" alt="" class="lastImg">`;
+                }
+            }
+
+            let btn = document.querySelectorAll('.img-box img');
+            for (let i = 0; i < 9; i++) {
+                btn[i].id = i;
+                btn[i].addEventListener('click', move);
+            }
+
+            function move() {
+
+                console.log(this.id);
+                if (btn[this.id].className !== "lastImg") {
+                    isHaving.call(this);
+                    isWin();
+                }
+            }
+
+            function isHaving() {
+                let index = this.id;
+                let lastImgIndex = Array.from(btn).findIndex(img => img.className === "lastImg");
+                let lastImg = btn[lastImgIndex];
+
+                let bottom = (index < 6) && (btn[parseInt(index) + 3].className === "lastImg");
+                let top = (index > 2) && (btn[parseInt(index) - 3].className === "lastImg");
+                let right = (index % 3 < 2) && (btn[parseInt(index) + 1].className === "lastImg");
+                let left = (index % 3 > 0) && (btn[parseInt(index) - 1].className === "lastImg");
+
+                if (bottom || top || right || left) {
+                    // 交换 src 地址
+                    let currentImgSrc = this.src;
+                    this.src = lastImg.src;
+                    lastImg.src = currentImgSrc;
+                    //交换class
+                    let currentClass = this.className;
+                    this.className = lastImg.className;
+                    lastImg.className = currentClass;
+                }
+            }
+            function isWin() {
+                //重新获取
+                btn = document.querySelectorAll('.img-box img')
+                let num = 0;
+                for (let i = 0; i < 8; i++) {
+                    console.dir(btn[i].className)
+                    console.dir(num)
+                    if (btn[i].className == i + 1) {
+                        num++;
+                        console.log(btn[i].className);
+                    }
+                }
+                if (num == 8) {
+                    alert('您赢了 太牛逼了~~~飞起来')
+                    alert('你点不了图片了 只能重新开始')
+                    const music = new Audio('./Skeleton-X - 神鹰哥de小曲.mp3');
+                    music.play();
+                    setTimeout(() => {
+                        music.pause();
+                    }, 12000);
+                }
+            }
+            let help = document.querySelector('.help')
+            help.addEventListener('click', function () {
+                num++;
+                bgmbtn.style.backgroundImage = `url(./musicimg/nomusic.png)`;
+                music1.pause();
+                imgBox.innerHTML = null;
+                for (let i = 1; i <= 9; i++) {
+                    if (i < 9) {
+                        imgBox.innerHTML += `<img src="./img/${i}.jpeg" alt="" id="${i}" class=${i}>`;
+                    } else {
+                        imgBox.innerHTML += `<img src="./img/null.jpeg" alt="" class="lastImg">`;
+                    }
+                }
+                isWin();
+            })
+        }
+    </script>
+</body>
+
+</html>
