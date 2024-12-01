@@ -100,8 +100,8 @@
     </div>
 
     <script>
-        let replay = document.querySelector('.replay')
-        replay.addEventListener('click', main)
+        let replay = document.querySelector('.replay');
+        replay.addEventListener('click', main);
         main();
         const music1 = new Audio('./001.mp3');
         let num = 0;
@@ -111,13 +111,13 @@
             if (num % 2 == 0) {
                 bgmbtn.style.backgroundImage = `url(./musicimg/nomusic.png)`;
                 music1.pause();
-            }
-            else {
+            } else {
                 bgmbtn.style.backgroundImage = `url(./musicimg/music.png)`;
                 music1.play();
                 music1.loop = true;
             }
-        })
+        });
+
         function main() {
             function generateRandomNumbers() {
                 let numbers = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -134,6 +134,7 @@
             console.log(randomNumbers);
             let imgBox = document.querySelector('.img-box');
             imgBox.innerHTML = null;
+
             for (let i = 1; i <= 9; i++) {
                 if (i < 9) {
                     imgBox.innerHTML += `<img src="./img/${randomNumbers[i - 1]}.jpeg" alt="" id="${randomNumbers[i - 1]}" class=${randomNumbers[i - 1]}>`;
@@ -149,7 +150,6 @@
             }
 
             function move() {
-
                 console.log(this.id);
                 if (btn[this.id].className !== "lastImg") {
                     isHaving.call(this);
@@ -172,36 +172,39 @@
                     let currentImgSrc = this.src;
                     this.src = lastImg.src;
                     lastImg.src = currentImgSrc;
-                    //交换class
+                    // 交换 class
                     let currentClass = this.className;
                     this.className = lastImg.className;
                     lastImg.className = currentClass;
                 }
             }
+
             function isWin() {
-                //重新获取
-                btn = document.querySelectorAll('.img-box img')
+                // 重新获取
+                btn = document.querySelectorAll('.img-box img');
                 let num = 0;
                 for (let i = 0; i < 8; i++) {
-                    console.dir(btn[i].className)
-                    console.dir(num)
                     if (btn[i].className == i + 1) {
                         num++;
-                        console.log(btn[i].className);
                     }
                 }
                 if (num == 8) {
-                    alert('您赢了 太牛逼了~~~飞起来')
-                    alert('你点不了图片了 只能重新开始')
-                    const music = new Audio('./Skeleton-X - 神鹰哥de小曲.mp3');
+                    alert('您赢了 太牛逼了~~~飞起来');
+                    const music = new Audio('./SkeletonX.mp3');
                     music.play();
                     setTimeout(() => {
                         music.pause();
                     }, 12000);
                 }
             }
-            let help = document.querySelector('.help')
-            help.addEventListener('click', function () {
+
+            let help = document.querySelector('.help');
+            help.replaceWith(help.cloneNode(true)); // 替换元素，移除所有事件监听器
+            help = document.querySelector('.help'); // 重新选择帮助按钮
+            help.addEventListener('click', helpAlert);
+
+            function helpAlert() {
+                alert('你点不了图片了 只能重新开始');
                 num++;
                 bgmbtn.style.backgroundImage = `url(./musicimg/nomusic.png)`;
                 music1.pause();
@@ -214,7 +217,7 @@
                     }
                 }
                 isWin();
-            })
+            }
         }
     </script>
 </body>
